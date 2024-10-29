@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Admin Management"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"/>
+    <EditText
+        android:id="@+id/adminEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Admin Email"
+        android:inputType="textEmailAddress"
+        android:padding="10dp"/>
+    <EditText
+        android:id="@+id/adminPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Admin Password"
+        android:inputType="textPassword"
+        android:padding="10dp"/>
+    <Button
+        android:id="@+id/addAdminButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add New Admin"
+        android:backgroundTint="@color/dark_blue"
+        android:textColor="@android:color/white"
+        android:padding="10dp"
+        android:layout_marginTop="12dp"/>
+    <EditText
+        android:id="@+id/searchAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search by Name"
+        android:paddingTop="50dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/adminRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+</LinearLayout>
