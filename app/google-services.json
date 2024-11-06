@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "118692648660",
+    "project_id": "mybankmate",
+    "storage_bucket": "mybankmate.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:118692648660:android:ccded2d020c08d93500d41",
+        "android_client_info": {
+          "package_name": "com.example.mybankmate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6wvw_7z0m50EMYkLBS791uoSZ9UNpsE0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

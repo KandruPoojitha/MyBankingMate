@@ -1,0 +1,44 @@
+<!-- activity_admin_dashboard.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/gradient_drawable"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Admin Dashboard"
+        android:textSize="30sp"
+        android:textColor="@android:color/black"
+        android:layout_gravity="center"
+        android:paddingBottom="24dp" />
+
+    <Button
+        android:id="@+id/userManagementButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="User Management"
+        android:backgroundTint="@color/dark_blue"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/adminManagementButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/dark_blue"
+        android:text="Admin Management"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:backgroundTint="#BD0427"
+        android:textColor="@android:color/white" />
+
+</LinearLayout>
