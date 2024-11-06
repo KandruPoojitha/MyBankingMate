@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,7 +42,6 @@ public class UserManagementActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_management);
 
-        // Initialize Firebase and UI elements
         auth = FirebaseAuth.getInstance();
         usersRef = FirebaseDatabase.getInstance().getReference("users");
 
@@ -58,7 +56,6 @@ public class UserManagementActivity extends AppCompatActivity {
         userAdapter = new UserAdapter(userList, usersRef);
         userRecyclerView.setAdapter(userAdapter);
 
-        // Add User Button
         addUserButton.setOnClickListener(v -> {
             String email = newUserEmail.getText().toString().trim();
             String password = newUserPassword.getText().toString().trim();
@@ -67,16 +64,17 @@ public class UserManagementActivity extends AppCompatActivity {
             }
         });
 
-        // Search functionality
         searchUser.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 userAdapter.filter(s.toString());
             }
+
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
             @Override
-            public void afterTextChanged(Editable s) { }
+            public void afterTextChanged(Editable s) {}
         });
 
         loadUsers();
@@ -99,24 +97,23 @@ public class UserManagementActivity extends AppCompatActivity {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        FirebaseUser user = auth.getCurrentUser();
-                        if (user != null) {
-                            Map<String, Object> userData = new HashMap<>();
-                            userData.put("email", email);
-                            userData.put("accountNumber", accountNumber);
-                            userData.put("isActive", true);
+                        Map<String, Object> userData = new HashMap<>();
+                        userData.put("email", email);
+                        userData.put("password", password);  // Storing the password (not recommended for production)
+                        userData.put("accountNumber", accountNumber);
+                        userData.put("isFirstLogin", true);  // Set first login flag
+                        userData.put("isActive", true);
 
-                            usersRef.child(accountNumber).setValue(userData)
-                                    .addOnCompleteListener(task1 -> {
-                                        if (task1.isSuccessful()) {
-                                            Toast.makeText(this, "User added with Account Number: " + accountNumber, Toast.LENGTH_LONG).show();
-                                            newUserEmail.setText("");
-                                            newUserPassword.setText("");
-                                        } else {
-                                            Toast.makeText(this, "Failed to add user data", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        }
+                        usersRef.child(accountNumber).setValue(userData)
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        Toast.makeText(this, "User added with Account Number: " + accountNumber, Toast.LENGTH_LONG).show();
+                                        newUserEmail.setText("");
+                                        newUserPassword.setText("");
+                                    } else {
+                                        Toast.makeText(this, "Failed to add user data", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     } else {
                         Toast.makeText(this, "Failed to create user: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
@@ -138,6 +135,7 @@ public class UserManagementActivity extends AppCompatActivity {
                 }
                 userAdapter.notifyDataSetChanged();
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(UserManagementActivity.this, "Failed to load users", Toast.LENGTH_SHORT).show();
