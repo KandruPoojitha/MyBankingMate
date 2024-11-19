@@ -1,97 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="#F8F8F8">
+    android:background="#f7f7f7"
+    android:padding="16dp">
 
+    <!-- Greeting and Username -->
     <TextView
         android:id="@+id/greetingTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Good Morning"
         android:textSize="24sp"
-        android:textColor="#333333"
-        android:layout_marginTop="16dp"/>
+        android:textStyle="bold"
+        android:text="Good morning, Poojitha"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="16dp" />
 
-    <TextView
-        android:id="@+id/accountNumberTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Account: 123456789"
-        android:textSize="18sp"
-        android:layout_below="@id/greetingTextView"
-        android:layout_marginTop="8dp"
-        android:textColor="#333333"/>
-
+    <!-- Button Row -->
     <LinearLayout
+        android:id="@+id/buttonRow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/greetingTextView"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="3"
+        android:layout_marginBottom="16dp">
+
+        <Button
+            android:id="@+id/interacButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#4CAF50"
+            android:text="Interac e-Transfer" />
+
+        <Button
+            android:id="@+id/transferButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#4CAF50"
+            android:text="Transfer" />
+
+        <Button
+            android:id="@+id/payButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#4CAF50"
+            android:text="Pay Bills" />
+    </LinearLayout>
+
+    <!-- Accounts Section -->
+    <TextView
+        android:id="@+id/accountsHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttonRow"
+        android:textSize="20sp"
+        android:text="My Accounts"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/accountsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/accountsHeader"
         android:orientation="vertical"
-        android:layout_below="@id/accountNumberTextView"
         android:layout_marginTop="16dp">
 
         <TextView
-            android:id="@+id/chequingTextView"
+            android:id="@+id/bankingTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Chequing: $0.00"
-            android:textSize="18sp"
-            android:textColor="#333333"
-            android:padding="8dp"/>
+            android:text="Banking: $81.31" />
 
         <TextView
-            android:id="@+id/savingsTextView"
+            android:id="@+id/creditCardTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Savings: $0.00"
-            android:textSize="18sp"
-            android:textColor="#333333"
-            android:padding="8dp"/>
-
-        <TextView
-            android:id="@+id/visaTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="VISA: $0.00"
-            android:textSize="18sp"
-            android:textColor="#333333"
-            android:padding="8dp"/>
+            android:text="Credit Cards: $0.00"
+            android:layout_marginTop="8dp" />
     </LinearLayout>
 
-    <LinearLayout
+    <!-- Edit Home Screen Button -->
+    <Button
+        android:id="@+id/editHomeScreenButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:gravity="center">
+        android:layout_below="@id/accountsContainer"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#ffffff"
+        android:textColor="#4CAF50"
+        android:text="Edit Home Screen" />
 
-        <!-- Icons for navigation -->
-        <Button
-            android:id="@+id/homeButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Home"/>
-
-        <Button
-            android:id="@+id/accountsButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Accounts"/>
-
-        <Button
-            android:id="@+id/moveMoneyButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Move Money"/>
-
-        <Button
-            android:id="@+id/moreButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="More"/>
-    </LinearLayout>
 </RelativeLayout>

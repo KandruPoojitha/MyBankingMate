@@ -2,29 +2,37 @@ package com.example.mybankmate;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import com.airbnb.lottie.LottieAnimationView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final int SPLASH_DISPLAY_LENGTH = 3000; // 3 seconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        LottieAnimationView lottieAnimationView = findViewById(R.id.lottieAnimationView);
-        lottieAnimationView.setAnimation(R.raw.splash_animation);
-        lottieAnimationView.playAnimation();
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
 
-        // Delay and start the main activity after the animation completes
-        new Handler().postDelayed(() -> {
-            Intent mainIntent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(mainIntent);
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            finish();
-        }, SPLASH_DISPLAY_LENGTH);
+            if (id == R.id.nav_home) {
+                // Already on Home, no action needed
+                return true;
+            } else if (id == R.id.nav_accounts) {
+                startActivity(new Intent(MainActivity.this, AccountsActivity.class));
+                return true;
+            } else if (id == R.id.nav_move_money) {
+                startActivity(new Intent(MainActivity.this, MoveMoneyActivity.class));
+                return true;
+            } else if (id == R.id.nav_more) {
+                startActivity(new Intent(MainActivity.this, MoreActivity.class));
+                return true;
+            }
+
+            return false;
+        });
+
     }
 }

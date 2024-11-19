@@ -61,7 +61,6 @@ public class LoginActivity extends AppCompatActivity {
     private void authenticateUser(String email, String password) {
         Log.d(TAG, "Authenticating user with email: " + email);
 
-        // Check if the user is an admin
         adminsRef.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -70,7 +69,6 @@ public class LoginActivity extends AppCompatActivity {
                         String storedPassword = adminSnapshot.child("password").getValue(String.class);
                         if (storedPassword != null && storedPassword.equals(password)) {
                             Log.d(TAG, "Admin login successful.");
-                            // Redirect to Admin Activity if password matches
                             Intent intent = new Intent(LoginActivity.this, AdminActivity.class);
                             startActivity(intent);
                             finish();
@@ -78,7 +76,6 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 }
-                // If not an admin, check if the user is a regular user
                 checkUser(email, password);
             }
 
@@ -104,14 +101,13 @@ public class LoginActivity extends AppCompatActivity {
                         if (storedPassword != null && storedPassword.equals(password)) {
                             if (Boolean.TRUE.equals(isFirstLogin)) {
                                 Log.d(TAG, "First login, redirecting to ResetPasswordActivity.");
-                                // Redirect to ResetPasswordActivity if this is the first login
                                 Intent intent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
                                 intent.putExtra("accountNumber", userSnapshot.getKey());
                                 startActivity(intent);
                             } else {
                                 Log.d(TAG, "Regular user login successful, redirecting to HomeActivity.");
-                                // Redirect to HomeActivity if password matches and user has already reset password
                                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                intent.putExtra("userId", userSnapshot.getKey());
                                 startActivity(intent);
                             }
                             finish();
