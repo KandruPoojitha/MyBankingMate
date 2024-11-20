@@ -28,7 +28,7 @@ import java.util.Random;
 
 public class UserManagementActivity extends AppCompatActivity {
 
-    private EditText newUserEmail, newUserPassword, searchUser;
+    private EditText newUserEmail, newUserPassword, newUserMobile, newUserAddress, searchUser;
     private Button addUserButton;
     private RecyclerView userRecyclerView;
     private UserAdapter userAdapter;
@@ -47,6 +47,8 @@ public class UserManagementActivity extends AppCompatActivity {
 
         newUserEmail = findViewById(R.id.newUserEmail);
         newUserPassword = findViewById(R.id.newUserPassword);
+        newUserMobile = findViewById(R.id.newUserMobile);
+        newUserAddress = findViewById(R.id.newUserAddress);
         addUserButton = findViewById(R.id.addUserButton);
         searchUser = findViewById(R.id.searchUser);
         userRecyclerView = findViewById(R.id.userRecyclerView);
@@ -59,8 +61,10 @@ public class UserManagementActivity extends AppCompatActivity {
         addUserButton.setOnClickListener(v -> {
             String email = newUserEmail.getText().toString().trim();
             String password = newUserPassword.getText().toString().trim();
-            if (validateInput(email, password)) {
-                addUser(email, password);
+            String mobile = newUserMobile.getText().toString().trim();
+            String address = newUserAddress.getText().toString().trim();
+            if (validateInput(email, password, mobile, address)) {
+                addUser(email, password, mobile, address);
             }
         });
 
@@ -80,7 +84,7 @@ public class UserManagementActivity extends AppCompatActivity {
         loadUsers();
     }
 
-    private boolean validateInput(String email, String password) {
+    private boolean validateInput(String email, String password, String mobile, String address) {
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
             return false;
@@ -89,27 +93,38 @@ public class UserManagementActivity extends AppCompatActivity {
             Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
             return false;
         }
+        if (TextUtils.isEmpty(mobile) || mobile.length() != 10 || !mobile.matches("\\d+")) {
+            Toast.makeText(this, "Enter a valid 10-digit mobile number", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (TextUtils.isEmpty(address)) {
+            Toast.makeText(this, "Address cannot be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         return true;
     }
 
-    private void addUser(final String email, final String password) {
-        String accountNumber = generateAccountNumber();
+    private void addUser(final String email, final String password, final String mobile, final String address) {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        String accountNumber = generateAccountNumber();
+                        auth.getCurrentUser().sendEmailVerification();
+
                         Map<String, Object> userData = new HashMap<>();
                         userData.put("email", email);
-                        userData.put("password", password);  // Storing the password (not recommended for production)
+                        userData.put("password", password); // Not recommended in production
+                        userData.put("mobile", mobile);
+                        userData.put("address", address);
                         userData.put("accountNumber", accountNumber);
-                        userData.put("isFirstLogin", true);  // Set first login flag
-                        userData.put("isActive", true);
+                        userData.put("isFirstLogin", true);
+                        userData.put("isActive", false); // Inactive until email is verified
 
                         usersRef.child(accountNumber).setValue(userData)
                                 .addOnCompleteListener(task1 -> {
                                     if (task1.isSuccessful()) {
-                                        Toast.makeText(this, "User added with Account Number: " + accountNumber, Toast.LENGTH_LONG).show();
-                                        newUserEmail.setText("");
-                                        newUserPassword.setText("");
+                                        Toast.makeText(this, "User added! Please verify email.", Toast.LENGTH_LONG).show();
+                                        clearFields();
                                     } else {
                                         Toast.makeText(this, "Failed to add user data", Toast.LENGTH_SHORT).show();
                                     }
@@ -118,6 +133,13 @@ public class UserManagementActivity extends AppCompatActivity {
                         Toast.makeText(this, "Failed to create user: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void clearFields() {
+        newUserEmail.setText("");
+        newUserPassword.setText("");
+        newUserMobile.setText("");
+        newUserAddress.setText("");
     }
 
     private String generateAccountNumber() {
