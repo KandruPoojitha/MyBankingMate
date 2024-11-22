@@ -1,98 +1,114 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f7f7f7"
+    android:background="@color/white"
     android:padding="16dp">
 
-    <!-- Greeting and Username -->
-    <TextView
-        android:id="@+id/greetingTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:text="Good morning, Poojitha"
-        android:layout_alignParentTop="true"
-        android:layout_marginBottom="16dp" />
+    <!-- Main Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_navigation">
 
-    <!-- Button Row -->
-    <LinearLayout
-        android:id="@+id/buttonRow"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Greeting Section -->
+            <TextView
+                android:id="@+id/greetingTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Good Morning, User"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Quick Actions Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/btn_interac_transfer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Interac e-Transfer"
+                    android:background="@drawable/rounded_button"
+                    android:padding="10dp"
+                    android:textColor="@color/white" />
+
+                <Button
+                    android:id="@+id/btn_transfer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Transfer"
+                    android:background="@drawable/rounded_button"
+                    android:padding="10dp"
+                    android:textColor="@color/white"
+                    android:layout_marginStart="8dp" />
+
+                <Button
+                    android:id="@+id/btn_payments"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Payments"
+                    android:background="@drawable/rounded_button"
+                    android:padding="10dp"
+                    android:textColor="@color/white"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <!-- My Accounts Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="My Accounts"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/border"
+                android:padding="8dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/banking_accounts_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Banking: 2 accounts"
+                    android:textSize="14sp"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/credit_cards_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Credit Cards: 1 account"
+                    android:textSize="14sp"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/greetingTextView"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:weightSum="3"
-        android:layout_marginBottom="16dp">
-
-        <Button
-            android:id="@+id/interacButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#4CAF50"
-            android:text="Interac e-Transfer" />
-
-        <Button
-            android:id="@+id/transferButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#4CAF50"
-            android:text="Transfer" />
-
-        <Button
-            android:id="@+id/payButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#4CAF50"
-            android:text="Pay Bills" />
-    </LinearLayout>
-
-    <!-- Accounts Section -->
-    <TextView
-        android:id="@+id/accountsHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/buttonRow"
-        android:textSize="20sp"
-        android:text="My Accounts"
-        android:textStyle="bold" />
-
-    <LinearLayout
-        android:id="@+id/accountsContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/accountsHeader"
-        android:orientation="vertical"
-        android:layout_marginTop="16dp">
-
-        <TextView
-            android:id="@+id/bankingTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Banking: $81.31" />
-
-        <TextView
-            android:id="@+id/creditCardTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Credit Cards: $0.00"
-            android:layout_marginTop="8dp" />
-    </LinearLayout>
-
-    <!-- Edit Home Screen Button -->
-    <Button
-        android:id="@+id/editHomeScreenButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/accountsContainer"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#ffffff"
-        android:textColor="#4CAF50"
-        android:text="Edit Home Screen" />
-
+        android:layout_alignParentBottom="true"
+        android:background="?attr/colorPrimary"
+        app:menu="@menu/bottom_nav_menu" />
 </RelativeLayout>
