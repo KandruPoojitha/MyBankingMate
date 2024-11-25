@@ -1,13 +1,19 @@
 package com.example.mybankmate;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.mybankmate.R;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,28 +25,34 @@ import java.util.Calendar;
 
 public class HomeActivity extends AppCompatActivity {
 
-    private static final String TAG = "HomeActivity";
-
-    private TextView greetingTextView, bankingTextView, creditCardTextView;
-    private FirebaseAuth auth;
-    private DatabaseReference usersRef;
+    private TextView greetingTextView, bankingAccountsText, creditCardsText;
+    private Button btnInteracTransfer, btnTransfer, btnPayments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        // Initialize Views
         greetingTextView = findViewById(R.id.greetingTextView);
-        bankingTextView = findViewById(R.id.bankingTextView);
-        creditCardTextView = findViewById(R.id.creditCardTextView);
+        bankingAccountsText = findViewById(R.id.banking_accounts_text);
+        creditCardsText = findViewById(R.id.credit_cards_text);
+        btnInteracTransfer = findViewById(R.id.btn_interac_transfer);
+        btnTransfer = findViewById(R.id.btn_transfer);
+        btnPayments = findViewById(R.id.btn_payments);
 
-        auth = FirebaseAuth.getInstance();
-        usersRef = FirebaseDatabase.getInstance().getReference("users");
+        // Initialize Firebase
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
-        loadUserData();
+        // Load user data
+        loadUserData(usersRef);
+
+        // Setup bottom navigation
+        setupBottomNavigation();
     }
 
-    private void loadUserData() {
+    private void loadUserData(DatabaseReference usersRef) {
         String userId = getIntent().getStringExtra("userId");
 
         if (userId != null) {
@@ -48,13 +60,15 @@ public class HomeActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
+                        // Get user data from Firebase
                         String userName = dataSnapshot.child("email").getValue(String.class);
                         String bankingBalance = dataSnapshot.child("bankingBalance").getValue(String.class);
                         String creditCardBalance = dataSnapshot.child("creditCardBalance").getValue(String.class);
 
+                        // Set data to TextViews (with null checks to prevent crashes)
                         greetingTextView.setText(generateGreeting() + ", " + (userName != null ? userName : "User"));
-                        bankingTextView.setText("Banking: $" + (bankingBalance != null ? bankingBalance : "0.00"));
-                        creditCardTextView.setText("Credit Cards: $" + (creditCardBalance != null ? creditCardBalance : "0.00"));
+                        bankingAccountsText.setText("Banking: $" + (bankingBalance != null ? bankingBalance : "0.00"));
+                        creditCardsText.setText("Credit Cards: $" + (creditCardBalance != null ? creditCardBalance : "0.00"));
                     } else {
                         Toast.makeText(HomeActivity.this, "User data not found.", Toast.LENGTH_SHORT).show();
                     }
@@ -62,12 +76,13 @@ public class HomeActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e(TAG, "Failed to load user data: " + databaseError.getMessage());
                     Toast.makeText(HomeActivity.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
             Toast.makeText(HomeActivity.this, "User ID is missing. Please log in again.", Toast.LENGTH_SHORT).show();
-            finish();
+            finish(); // Redirect back to Login if user ID is null
         }
     }
 
@@ -80,5 +95,30 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             return "Good Evening";
         }
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_home) {
+                // Already on Home, no action needed
+                return true;
+            } else if (id == R.id.nav_accounts) {
+                startActivity(new Intent(HomeActivity.this, AccountsActivity.class));
+                return true;
+            } else if (id == R.id.nav_move_money) {
+                startActivity(new Intent(HomeActivity.this, MoveMoneyActivity.class));
+                return true;
+            } else if (id == R.id.nav_more) {
+                startActivity(new Intent(HomeActivity.this, MoreActivity.class));
+                return true;
+            }
+
+            return false;
+        });
+
     }
 }
