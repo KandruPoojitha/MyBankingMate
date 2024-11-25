@@ -5,9 +5,12 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
+
     <EditText
         android:id="@+id/editEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Edit Email"/>
+        android:hint="Edit Email"
+        android:inputType="textEmailAddress"
+        android:padding="10dp" />
 </LinearLayout>

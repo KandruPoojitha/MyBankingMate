@@ -1,8 +1,5 @@
 package com.example.mybankmate;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,7 +9,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,9 +26,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText emailField, passwordField;
     private Button loginButton;
-    private FirebaseDatabase database;
-    private DatabaseReference usersRef, adminsRef;
     private FirebaseAuth auth;
+    private DatabaseReference usersRef, adminsRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +35,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
-        usersRef = database.getReference("users");
-        adminsRef = database.getReference("admins");
+        usersRef = FirebaseDatabase.getInstance().getReference("users");
+        adminsRef = FirebaseDatabase.getInstance().getReference("admins");
 
         emailField = findViewById(R.id.email);
         passwordField = findViewById(R.id.password);
@@ -51,16 +50,18 @@ public class LoginActivity extends AppCompatActivity {
             if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
                 Toast.makeText(LoginActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             } else {
-                authenticateUser(email, password);
+                // Check for admin login first
+                authenticateAdmin(email, password);
             }
         });
 
         forgotPassword.setOnClickListener(v -> resetPassword());
     }
 
-    private void authenticateUser(String email, String password) {
-        Log.d(TAG, "Authenticating user with email: " + email);
-
+    /**
+     * Authenticate an admin user.
+     */
+    private void authenticateAdmin(String email, String password) {
         adminsRef.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -68,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                     for (DataSnapshot adminSnapshot : dataSnapshot.getChildren()) {
                         String storedPassword = adminSnapshot.child("password").getValue(String.class);
                         if (storedPassword != null && storedPassword.equals(password)) {
+                            // Admin login success
                             Log.d(TAG, "Admin login successful.");
                             Intent intent = new Intent(LoginActivity.this, AdminActivity.class);
                             startActivity(intent);
@@ -76,20 +78,24 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 }
-                checkUser(email, password);
+
+                // If not an admin, check as a regular user
+                Log.d(TAG, "Not an admin. Checking regular user login.");
+                authenticateRegularUser(email, password);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "Admin check failed: " + databaseError.getMessage());
+                Log.e(TAG, "Admin authentication failed: " + databaseError.getMessage());
                 Toast.makeText(LoginActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void checkUser(String email, String password) {
-        Log.d(TAG, "Checking regular user with email: " + email);
-
+    /**
+     * Authenticate a regular user.
+     */
+    private void authenticateRegularUser(String email, String password) {
         usersRef.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -99,13 +105,14 @@ public class LoginActivity extends AppCompatActivity {
                         Boolean isFirstLogin = userSnapshot.child("isFirstLogin").getValue(Boolean.class);
 
                         if (storedPassword != null && storedPassword.equals(password)) {
+                            // Check if it's the user's first login
                             if (Boolean.TRUE.equals(isFirstLogin)) {
-                                Log.d(TAG, "First login, redirecting to ResetPasswordActivity.");
+                                Log.d(TAG, "First login detected. Redirecting to ResetPasswordActivity.");
                                 Intent intent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
                                 intent.putExtra("accountNumber", userSnapshot.getKey());
                                 startActivity(intent);
                             } else {
-                                Log.d(TAG, "Regular user login successful, redirecting to HomeActivity.");
+                                Log.d(TAG, "Regular user login successful. Redirecting to HomeActivity.");
                                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                                 intent.putExtra("userId", userSnapshot.getKey());
                                 startActivity(intent);
@@ -115,18 +122,23 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 }
-                Log.d(TAG, "Invalid email or password.");
+
+                // Invalid email or password
+                Log.d(TAG, "Invalid email or password for regular user.");
                 Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "User check failed: " + databaseError.getMessage());
+                Log.e(TAG, "User authentication failed: " + databaseError.getMessage());
                 Toast.makeText(LoginActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    /**
+     * Reset user password.
+     */
     private void resetPassword() {
         String email = emailField.getText().toString().trim();
         if (TextUtils.isEmpty(email)) {

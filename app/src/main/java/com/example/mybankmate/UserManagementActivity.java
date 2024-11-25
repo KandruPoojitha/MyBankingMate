@@ -1,8 +1,8 @@
 package com.example.mybankmate;
 
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
+import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
@@ -108,22 +108,26 @@ public class UserManagementActivity extends AppCompatActivity {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        String accountNumber = generateAccountNumber();
-                        auth.getCurrentUser().sendEmailVerification();
+                        String userId = task.getResult().getUser().getUid(); // Get UID from FirebaseAuth
+                        String checkingAccountNumber = generateAccountNumber("CHK");
+                        String savingsAccountNumber = generateAccountNumber("SAV");
 
                         Map<String, Object> userData = new HashMap<>();
+                        userData.put("uid", userId);
                         userData.put("email", email);
-                        userData.put("password", password); // Not recommended in production
                         userData.put("mobile", mobile);
                         userData.put("address", address);
-                        userData.put("accountNumber", accountNumber);
+                        userData.put("checkingAccountNumber", checkingAccountNumber);
+                        userData.put("savingsAccountNumber", savingsAccountNumber);
+                        userData.put("checkingBalance", "0.00");
+                        userData.put("savingsBalance", "0.00");
                         userData.put("isFirstLogin", true);
-                        userData.put("isActive", false); // Inactive until email is verified
+                        userData.put("isActive", false);
 
-                        usersRef.child(accountNumber).setValue(userData)
+                        usersRef.child(userId).setValue(userData)
                                 .addOnCompleteListener(task1 -> {
                                     if (task1.isSuccessful()) {
-                                        Toast.makeText(this, "User added! Please verify email.", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(this, "User added successfully!", Toast.LENGTH_LONG).show();
                                         clearFields();
                                     } else {
                                         Toast.makeText(this, "Failed to add user data", Toast.LENGTH_SHORT).show();
@@ -142,8 +146,9 @@ public class UserManagementActivity extends AppCompatActivity {
         newUserAddress.setText("");
     }
 
-    private String generateAccountNumber() {
-        return String.valueOf(1000000000 + new Random().nextInt(900000000));
+    private String generateAccountNumber(String prefix) {
+        int randomNum = 100000 + new Random().nextInt(900000); // 6-digit random number
+        return prefix + randomNum;
     }
 
     private void loadUsers() {
@@ -153,14 +158,14 @@ public class UserManagementActivity extends AppCompatActivity {
                 userList.clear();
                 for (DataSnapshot data : snapshot.getChildren()) {
                     User user = data.getValue(User.class);
-                    userList.add(user);
+                    if (user != null) userList.add(user);
                 }
                 userAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(UserManagementActivity.this, "Failed to load users", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserManagementActivity.this, "Failed to load users: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
