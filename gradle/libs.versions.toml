@@ -9,7 +9,8 @@ activity = "1.9.3"
 constraintlayout = "2.1.4"
 googleGmsGoogleServices = "4.4.2"
 firebaseAuth = "23.0.0"
-firebaseDatabase = "20.3.0"  # Add Firebase Database version
+firebaseDatabase = "20.3.0"
+cardview = "1.0.0"  # Add Firebase Database version
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -20,7 +21,8 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
-firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }  # Add Firebase Database
+firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }  # Add Firebase Database
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
