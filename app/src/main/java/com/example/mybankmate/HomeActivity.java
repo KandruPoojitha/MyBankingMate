@@ -102,23 +102,40 @@ public class HomeActivity extends AppCompatActivity {
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
+            String userId = FirebaseAuth.getInstance().getCurrentUser() != null
+                    ? FirebaseAuth.getInstance().getCurrentUser().getUid()
+                    : null;
 
-            if (id == R.id.nav_home) {
-                // Already on Home, no action needed
-                return true;
-            } else if (id == R.id.nav_accounts) {
-                startActivity(new Intent(HomeActivity.this, AccountsActivity.class));
-                return true;
-            } else if (id == R.id.nav_move_money) {
-                startActivity(new Intent(HomeActivity.this, MoveMoneyActivity.class));
-                return true;
-            } else if (id == R.id.nav_more) {
-                startActivity(new Intent(HomeActivity.this, MoreActivity.class));
-                return true;
+            if (userId == null) {
+                Log.e(TAG, "User is not authenticated. Redirecting to login.");
+                navigateToLogin();
+                return false;
             }
 
+            if (id == R.id.nav_home) {
+                return true; // Stay on HomeActivity
+            } else if (id == R.id.nav_accounts) {
+                Log.d(TAG, "Navigating to AccountsActivity with userId: " + userId);
+                Intent intent = new Intent(HomeActivity.this, AccountsActivity.class);
+                intent.putExtra("userId", userId);
+                startActivity(intent);
+                return true;
+            } else if (id == R.id.nav_move_money) {
+                Intent intent = new Intent(HomeActivity.this, MoveMoneyActivity.class);
+                startActivity(intent);
+                return true;
+            } else if (id == R.id.nav_more) {
+                Intent intent = new Intent(HomeActivity.this, MoreActivity.class);
+                startActivity(intent);
+                return true;
+            }
             return false;
         });
+    }
 
+    private void navigateToLogin() {
+        Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

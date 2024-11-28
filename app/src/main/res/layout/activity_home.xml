@@ -1,22 +1,25 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     android:padding="16dp">
 
-    <!-- Main Content -->
+    <!-- Scrollable Content -->
     <ScrollView
+        android:id="@+id/content_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/bottom_navigation">
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Greeting Section -->
             <TextView
                 android:id="@+id/greetingTextView"
                 android:layout_width="wrap_content"
@@ -26,7 +29,7 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Quick Actions Section -->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -41,7 +44,8 @@
                     android:text="Interac e-Transfer"
                     android:background="@drawable/rounded_button"
                     android:padding="10dp"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:contentDescription="Interac e-Transfer" />
 
                 <Button
                     android:id="@+id/btn_transfer"
@@ -52,7 +56,8 @@
                     android:background="@drawable/rounded_button"
                     android:padding="10dp"
                     android:textColor="@color/white"
-                    android:layout_marginStart="8dp" />
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="Transfer Money" />
 
                 <Button
                     android:id="@+id/btn_payments"
@@ -63,10 +68,10 @@
                     android:background="@drawable/rounded_button"
                     android:padding="10dp"
                     android:textColor="@color/white"
-                    android:layout_marginStart="8dp" />
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="Payments" />
             </LinearLayout>
 
-            <!-- My Accounts Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -107,8 +112,11 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="?attr/colorPrimary"
-        app:menu="@menu/bottom_nav_menu" />
-</RelativeLayout>
+        android:layout_height="65dp"
+        android:background="@drawable/navbar_gradient"
+        app:itemIconTint="@color/bottom_nav_item_color"
+        app:itemTextColor="@color/bottom_nav_item_color"
+        app:menu="@menu/bottom_nav_menu"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
