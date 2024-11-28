@@ -40,7 +40,7 @@
         android:inputType="phone"
         android:padding="10dp" />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/newUserAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
