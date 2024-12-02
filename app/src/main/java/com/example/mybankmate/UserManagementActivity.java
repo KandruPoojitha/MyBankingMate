@@ -1,8 +1,8 @@
 package com.example.mybankmate;
 
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
+import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -52,13 +52,13 @@ public class UserManagementActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_management);
+
         auth = FirebaseAuth.getInstance();
         usersRef = FirebaseDatabase.getInstance().getReference("users");
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), "AIzaSyCQsIJqnQs7sbv6gr-LT1amFavJoPFvCpQ");
         }
         placesClient = Places.createClient(this);
-
         newUserEmail = findViewById(R.id.newUserEmail);
         newUserPassword = findViewById(R.id.newUserPassword);
         newUserMobile = findViewById(R.id.newUserMobile);
@@ -116,6 +116,25 @@ public class UserManagementActivity extends AppCompatActivity {
         loadUsers();
     }
 
+    private boolean validateInput(String email, String password, String mobile, String address) {
+        if (TextUtils.isEmpty(email)) {
+            Toast.makeText(this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (TextUtils.isEmpty(password) || password.length() < 6) {
+            Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (TextUtils.isEmpty(mobile) || mobile.length() != 10 || !mobile.matches("\\d+")) {
+            Toast.makeText(this, "Enter a valid 10-digit mobile number", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (TextUtils.isEmpty(address)) {
+            Toast.makeText(this, "Address cannot be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
     private void fetchAddressSuggestions(String query) {
         AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
         FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
@@ -134,47 +153,62 @@ public class UserManagementActivity extends AppCompatActivity {
         });
     }
 
-    private boolean validateInput(String email, String password, String mobile, String address) {
-        if (TextUtils.isEmpty(email) || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "Invalid email", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (TextUtils.isEmpty(password) || password.length() < 6) {
-            Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (TextUtils.isEmpty(mobile) || !mobile.matches("\\d{10}")) {
-            Toast.makeText(this, "Invalid mobile number", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (TextUtils.isEmpty(address)) {
-            Toast.makeText(this, "Address cannot be empty", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        return true;
-    }
-
     private void addUser(final String email, final String password, final String mobile, final String address) {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        // Get the Firebase user
                         String userId = task.getResult().getUser().getUid();
+                        String checkingAccountNumber = generateAccountNumber("CHK");
+                        String savingsAccountNumber = generateAccountNumber("SAV");
+
                         Map<String, Object> userData = new HashMap<>();
+                        userData.put("uid", userId);
                         userData.put("email", email);
+                        userData.put("password", password);
                         userData.put("mobile", mobile);
                         userData.put("address", address);
+                        userData.put("checkingAccountNumber", checkingAccountNumber);
+                        userData.put("savingsAccountNumber", savingsAccountNumber);
+                        userData.put("checkingBalance", "0.00");
+                        userData.put("savingsBalance", "0.00");
+                        userData.put("isFirstLogin", true);
+                        userData.put("isActive", false);
+
+                        // Save user details in Realtime Database
                         usersRef.child(userId).setValue(userData)
                                 .addOnCompleteListener(task1 -> {
                                     if (task1.isSuccessful()) {
-                                        Toast.makeText(this, "User added successfully!", Toast.LENGTH_SHORT).show();
+                                        // Send verification email
+                                        auth.getCurrentUser().sendEmailVerification()
+                                                .addOnCompleteListener(emailTask -> {
+                                                    if (emailTask.isSuccessful()) {
+                                                        Toast.makeText(this, "User added successfully! Verification email sent.", Toast.LENGTH_LONG).show();
+                                                    } else {
+                                                        Toast.makeText(this, "User added, but failed to send verification email: " + emailTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                        clearFields();
                                     } else {
-                                        Toast.makeText(this, "Failed to add user", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(this, "Failed to add user data", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                     } else {
-                        Toast.makeText(this, "Failed to create user", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Failed to create user: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void clearFields() {
+        newUserEmail.setText("");
+        newUserPassword.setText("");
+        newUserMobile.setText("");
+        newUserAddress.setText("");
+    }
+
+    private String generateAccountNumber(String prefix) {
+        int randomNum = 100000 + new Random().nextInt(900000);
+        return prefix + randomNum;
     }
 
     private void loadUsers() {
@@ -191,7 +225,7 @@ public class UserManagementActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(UserManagementActivity.this, "Error loading users", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserManagementActivity.this, "Failed to load users: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
