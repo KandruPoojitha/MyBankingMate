@@ -9,7 +9,7 @@
         android:title="Accounts" />
     <item
         android:id="@+id/nav_move_money"
-        android:icon="@drawable/ic_money"
+        android:icon="@drawable/ic_transfer"
         android:title="Move Money" />
     <item
         android:id="@+id/nav_more"

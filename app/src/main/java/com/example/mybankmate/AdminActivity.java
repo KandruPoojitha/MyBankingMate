@@ -24,7 +24,6 @@ public class AdminActivity extends AppCompatActivity {
         adminManagementButton = findViewById(R.id.adminManagementButton);
         logoutButton = findViewById(R.id.logoutButton);
 
-        // Navigate to User Management
         userManagementButton.setOnClickListener(v -> {
             Intent intent = new Intent(AdminActivity.this, UserManagementActivity.class);
             startActivity(intent);
