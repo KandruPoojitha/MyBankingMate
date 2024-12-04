@@ -3,7 +3,18 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
+    <!-- Circle Background -->
     <path
-        android:fillColor="@color/selectedColor"
-        android:pathData="M12 8c1.1 0 2 .9 2 2h3l-4 4-4-4h3c0-1.1.9-2 2-2zm0-6c-1.1 0-2 .9-2 2h-3l4 4 4-4h-3c0-1.1-.9-2-2-2z" />
+        android:fillColor="#000000"
+        android:pathData="M12,2a10,10 0,1 1 -10,10 10,10 0,0 1 10,-10Z" />
+
+    <!-- Arrow Pointing Right -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M8,11h6l-2,-2 1,-1 4,3 -4,3 -1,-1 2,-2h-6z" />
+
+    <!-- Arrow Pointing Left -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M16,13h-6l2,2 -1,1 -4,-3 4,-3 1,1 -2,2h6z" />
 </vector>

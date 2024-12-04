@@ -30,6 +30,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    buildFeatures {
+        viewBinding = true
+    }
+
 }
 
 dependencies {
@@ -43,6 +47,10 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     implementation ("com.google.android.libraries.places:places:2.7.0")
     implementation ("com.google.android.libraries.places:places:2.7.0")
+
+    implementation ("com.google.android.material:material:1.9.0")
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

@@ -8,7 +8,7 @@ import com.airbnb.lottie.LottieAnimationView;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static final int SPLASH_DISPLAY_LENGTH = 5000;
+    private static final int SPLASH_DISPLAY_LENGTH = 4500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

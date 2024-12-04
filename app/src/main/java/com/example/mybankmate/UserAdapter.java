@@ -12,6 +12,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
@@ -22,12 +24,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     private final List<User> userList;
     private final List<User> filteredList;
     private final DatabaseReference usersRef;
+    private final FirebaseAuth auth;
     private Context context;
 
     public UserAdapter(List<User> userList, DatabaseReference usersRef) {
         this.userList = userList;
         this.filteredList = new ArrayList<>(userList);
         this.usersRef = usersRef;
+        this.auth = FirebaseAuth.getInstance();
     }
 
     public void filter(String text) {
@@ -97,8 +101,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                 String newEmail = emailEdit.getText().toString();
                 if (!newEmail.isEmpty()) {
                     usersRef.child(user.getUid()).child("email").setValue(newEmail)
-                            .addOnSuccessListener(aVoid -> Toast.makeText(context, "User updated", Toast.LENGTH_SHORT).show())
-                            .addOnFailureListener(e -> Toast.makeText(context, "Update failed", Toast.LENGTH_SHORT).show());
+                            .addOnSuccessListener(aVoid -> Toast.makeText(context, "User email updated in database", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> Toast.makeText(context, "Database update failed", Toast.LENGTH_SHORT).show());
+
+                    FirebaseUser currentUser = auth.getCurrentUser();
+                    if (currentUser != null && currentUser.getUid().equals(user.getUid())) {
+                        currentUser.updateEmail(newEmail)
+                                .addOnSuccessListener(aVoid -> Toast.makeText(context, "User email updated in authentication", Toast.LENGTH_SHORT).show())
+                                .addOnFailureListener(e -> Toast.makeText(context, "Authentication email update failed", Toast.LENGTH_SHORT).show());
+                    }
+                } else {
+                    Toast.makeText(context, "Email cannot be empty", Toast.LENGTH_SHORT).show();
                 }
             });
             dialog.setNegativeButton("Cancel", null);
@@ -110,9 +123,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             dialog.setTitle("Delete User")
                     .setMessage("Are you sure you want to delete this user?")
                     .setPositiveButton("Delete", (dialogInterface, i) -> {
+
                         usersRef.child(user.getUid()).removeValue()
-                                .addOnSuccessListener(aVoid -> Toast.makeText(context, "User deleted", Toast.LENGTH_SHORT).show())
-                                .addOnFailureListener(e -> Toast.makeText(context, "Deletion failed", Toast.LENGTH_SHORT).show());
+                                .addOnSuccessListener(aVoid -> Toast.makeText(context, "User deleted from database", Toast.LENGTH_SHORT).show())
+                                .addOnFailureListener(e -> Toast.makeText(context, "Database deletion failed", Toast.LENGTH_SHORT).show());
+
+                        FirebaseUser currentUser = auth.getCurrentUser();
+                        if (currentUser != null && currentUser.getUid().equals(user.getUid())) {
+                            currentUser.delete()
+                                    .addOnSuccessListener(aVoid -> Toast.makeText(context, "User deleted from authentication", Toast.LENGTH_SHORT).show())
+                                    .addOnFailureListener(e -> Toast.makeText(context, "Authentication deletion failed", Toast.LENGTH_SHORT).show());
+                        }
                     })
                     .setNegativeButton("Cancel", null)
                     .show();
