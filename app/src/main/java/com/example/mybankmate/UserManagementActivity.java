@@ -1,9 +1,11 @@
 package com.example.mybankmate;
 
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
+import android.text.Editable;
 import android.text.TextWatcher;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -13,6 +15,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,7 +35,8 @@ import java.util.Random;
 
 public class UserManagementActivity extends AppCompatActivity {
 
-    private EditText newUserEmail, newUserPassword, newUserMobile, newUserAddress, searchUser;
+    private EditText newUserEmail, newUserPassword, newUserMobile, searchUser;
+    private AutoCompleteTextView newUserAddress;
     private Button addUserButton;
     private RecyclerView userRecyclerView;
     private UserAdapter userAdapter;
@@ -37,6 +45,9 @@ public class UserManagementActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private DatabaseReference usersRef;
 
+    private PlacesClient placesClient;
+    private List<String> addressSuggestions;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +55,10 @@ public class UserManagementActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         usersRef = FirebaseDatabase.getInstance().getReference("users");
-
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), "AIzaSyCQsIJqnQs7sbv6gr-LT1amFavJoPFvCpQ");
+        }
+        placesClient = Places.createClient(this);
         newUserEmail = findViewById(R.id.newUserEmail);
         newUserPassword = findViewById(R.id.newUserPassword);
         newUserMobile = findViewById(R.id.newUserMobile);
@@ -57,6 +71,24 @@ public class UserManagementActivity extends AppCompatActivity {
         userList = new ArrayList<>();
         userAdapter = new UserAdapter(userList, usersRef);
         userRecyclerView.setAdapter(userAdapter);
+
+        addressSuggestions = new ArrayList<>();
+
+        // Set address suggestions
+        newUserAddress.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 2) { // Trigger suggestions after 3 characters
+                    fetchAddressSuggestions(s.toString());
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
 
         addUserButton.setOnClickListener(v -> {
             String email = newUserEmail.getText().toString().trim();
@@ -103,27 +135,59 @@ public class UserManagementActivity extends AppCompatActivity {
         }
         return true;
     }
+    private void fetchAddressSuggestions(String query) {
+        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
+        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+                .setSessionToken(token)
+                .setQuery(query)
+                .build();
+
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener(response -> {
+            addressSuggestions.clear();
+            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
+                addressSuggestions.add(prediction.getFullText(null).toString());
+            }
+            newUserAddress.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, addressSuggestions));
+        }).addOnFailureListener(e -> {
+            Toast.makeText(UserManagementActivity.this, "Error fetching address suggestions", Toast.LENGTH_SHORT).show();
+        });
+    }
 
     private void addUser(final String email, final String password, final String mobile, final String address) {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        String accountNumber = generateAccountNumber();
-                        auth.getCurrentUser().sendEmailVerification();
+                        // Get the Firebase user
+                        String userId = task.getResult().getUser().getUid();
+                        String checkingAccountNumber = generateAccountNumber("CHK");
+                        String savingsAccountNumber = generateAccountNumber("SAV");
 
                         Map<String, Object> userData = new HashMap<>();
+                        userData.put("uid", userId);
                         userData.put("email", email);
-                        userData.put("password", password); // Not recommended in production
+                        userData.put("password", password);
                         userData.put("mobile", mobile);
                         userData.put("address", address);
-                        userData.put("accountNumber", accountNumber);
+                        userData.put("checkingAccountNumber", checkingAccountNumber);
+                        userData.put("savingsAccountNumber", savingsAccountNumber);
+                        userData.put("checkingBalance", "0.00");
+                        userData.put("savingsBalance", "0.00");
                         userData.put("isFirstLogin", true);
-                        userData.put("isActive", false); // Inactive until email is verified
+                        userData.put("isActive", false);
 
-                        usersRef.child(accountNumber).setValue(userData)
+                        // Save user details in Realtime Database
+                        usersRef.child(userId).setValue(userData)
                                 .addOnCompleteListener(task1 -> {
                                     if (task1.isSuccessful()) {
-                                        Toast.makeText(this, "User added! Please verify email.", Toast.LENGTH_LONG).show();
+                                        // Send verification email
+                                        auth.getCurrentUser().sendEmailVerification()
+                                                .addOnCompleteListener(emailTask -> {
+                                                    if (emailTask.isSuccessful()) {
+                                                        Toast.makeText(this, "User added successfully! Verification email sent.", Toast.LENGTH_LONG).show();
+                                                    } else {
+                                                        Toast.makeText(this, "User added, but failed to send verification email: " + emailTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
                                         clearFields();
                                     } else {
                                         Toast.makeText(this, "Failed to add user data", Toast.LENGTH_SHORT).show();
@@ -142,8 +206,9 @@ public class UserManagementActivity extends AppCompatActivity {
         newUserAddress.setText("");
     }
 
-    private String generateAccountNumber() {
-        return String.valueOf(1000000000 + new Random().nextInt(900000000));
+    private String generateAccountNumber(String prefix) {
+        int randomNum = 100000 + new Random().nextInt(900000);
+        return prefix + randomNum;
     }
 
     private void loadUsers() {
@@ -153,14 +218,14 @@ public class UserManagementActivity extends AppCompatActivity {
                 userList.clear();
                 for (DataSnapshot data : snapshot.getChildren()) {
                     User user = data.getValue(User.class);
-                    userList.add(user);
+                    if (user != null) userList.add(user);
                 }
                 userAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(UserManagementActivity.this, "Failed to load users", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserManagementActivity.this, "Failed to load users: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

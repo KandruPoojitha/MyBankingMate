@@ -4,10 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,8 +19,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class AdminManagementActivity extends AppCompatActivity {
@@ -36,36 +39,43 @@ public class AdminManagementActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_management);
 
+        // Firebase reference
         adminsRef = FirebaseDatabase.getInstance().getReference("admins");
+
+        // Views initialization
         adminEmailField = findViewById(R.id.adminEmail);
         adminPasswordField = findViewById(R.id.adminPassword);
         searchField = findViewById(R.id.searchAdmin);
         addAdminButton = findViewById(R.id.addAdminButton);
         adminRecyclerView = findViewById(R.id.adminRecyclerView);
 
+        // Setup RecyclerView
         adminRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         adminList = new ArrayList<>();
         adminAdapter = new AdminAdapter(adminList, adminsRef);
         adminRecyclerView.setAdapter(adminAdapter);
 
+        // Load all admins initially
         loadAdmins();
 
+        // Add admin functionality
         addAdminButton.setOnClickListener(v -> {
             String email = adminEmailField.getText().toString().trim();
             String password = adminPasswordField.getText().toString().trim();
 
             if (validateInput(email, password)) {
-                addAdmin(email, password);
+                checkIfAdminExists(email, password);
             }
         });
 
+        // Search functionality
         searchField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String searchQuery = charSequence.toString().trim();
+                String searchQuery = charSequence.toString().trim().toLowerCase(Locale.ROOT);
                 searchAdmins(searchQuery);
             }
 
@@ -90,6 +100,24 @@ public class AdminManagementActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(AdminManagementActivity.this, "Failed to load admins", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void checkIfAdminExists(String email, String password) {
+        adminsRef.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Toast.makeText(AdminManagementActivity.this, "Admin with this email already exists.", Toast.LENGTH_SHORT).show();
+                } else {
+                    addAdmin(email, password);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(AdminManagementActivity.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

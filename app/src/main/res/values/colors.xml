@@ -5,4 +5,9 @@
     <color name="dark_blue">#065A9E</color>
     <color name="light_blue">#09A5EB</color>
     <color name="primary_color">#2C4DF3</color>
+    <color name="light_gray">#E0E0E0</color>
+    <color name="gray">#757575</color>
+    <color name="selectedColor">#FFFFFF</color>
+    <color name="unselectedColor">#BDBDBD</color>
+
 </resources>

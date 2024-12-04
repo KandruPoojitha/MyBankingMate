@@ -2,7 +2,6 @@ package com.example.mybankmate;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,21 +12,26 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
+
     private final List<User> userList;
     private final List<User> filteredList;
     private final DatabaseReference usersRef;
+    private final FirebaseAuth auth;
     private Context context;
 
     public UserAdapter(List<User> userList, DatabaseReference usersRef) {
         this.userList = userList;
         this.filteredList = new ArrayList<>(userList);
         this.usersRef = usersRef;
+        this.auth = FirebaseAuth.getInstance();
     }
 
     public void filter(String text) {
@@ -64,22 +68,21 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     }
 
     class UserViewHolder extends RecyclerView.ViewHolder {
-        private final TextView emailText;
-        private final TextView accountNumberText;
-        private final TextView editButton;
-        private final TextView deleteButton;
+        private final TextView emailText, checkingAccountText, savingsAccountText, editButton, deleteButton;
 
         UserViewHolder(@NonNull View itemView) {
             super(itemView);
             emailText = itemView.findViewById(R.id.userEmailText);
-            accountNumberText = itemView.findViewById(R.id.userAccountNumberText);
+            checkingAccountText = itemView.findViewById(R.id.checkingAccountText);
+            savingsAccountText = itemView.findViewById(R.id.savingsAccountText);
             editButton = itemView.findViewById(R.id.editUserButton);
             deleteButton = itemView.findViewById(R.id.deleteUserButton);
         }
 
         void bind(User user) {
             emailText.setText(user.getEmail());
-            accountNumberText.setText(user.getAccountNumber());
+            checkingAccountText.setText(user.getCheckingAccountNumber());
+            savingsAccountText.setText(user.getSavingsAccountNumber());
 
             editButton.setOnClickListener(v -> editUser(user));
             deleteButton.setOnClickListener(v -> deleteUser(user));
@@ -97,9 +100,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             dialog.setPositiveButton("Update", (dialogInterface, i) -> {
                 String newEmail = emailEdit.getText().toString();
                 if (!newEmail.isEmpty()) {
-                    usersRef.child(user.getAccountNumber()).child("email").setValue(newEmail)
-                            .addOnSuccessListener(aVoid -> Toast.makeText(context, "User updated", Toast.LENGTH_SHORT).show())
-                            .addOnFailureListener(e -> Toast.makeText(context, "Update failed", Toast.LENGTH_SHORT).show());
+                    usersRef.child(user.getUid()).child("email").setValue(newEmail)
+                            .addOnSuccessListener(aVoid -> Toast.makeText(context, "User email updated in database", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> Toast.makeText(context, "Database update failed", Toast.LENGTH_SHORT).show());
+
+                    FirebaseUser currentUser = auth.getCurrentUser();
+                    if (currentUser != null && currentUser.getUid().equals(user.getUid())) {
+                        currentUser.updateEmail(newEmail)
+                                .addOnSuccessListener(aVoid -> Toast.makeText(context, "User email updated in authentication", Toast.LENGTH_SHORT).show())
+                                .addOnFailureListener(e -> Toast.makeText(context, "Authentication email update failed", Toast.LENGTH_SHORT).show());
+                    }
+                } else {
+                    Toast.makeText(context, "Email cannot be empty", Toast.LENGTH_SHORT).show();
                 }
             });
             dialog.setNegativeButton("Cancel", null);
@@ -111,9 +123,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             dialog.setTitle("Delete User")
                     .setMessage("Are you sure you want to delete this user?")
                     .setPositiveButton("Delete", (dialogInterface, i) -> {
-                        usersRef.child(user.getAccountNumber()).removeValue()
-                                .addOnSuccessListener(aVoid -> Toast.makeText(context, "User deleted", Toast.LENGTH_SHORT).show())
-                                .addOnFailureListener(e -> Toast.makeText(context, "Deletion failed", Toast.LENGTH_SHORT).show());
+
+                        usersRef.child(user.getUid()).removeValue()
+                                .addOnSuccessListener(aVoid -> Toast.makeText(context, "User deleted from database", Toast.LENGTH_SHORT).show())
+                                .addOnFailureListener(e -> Toast.makeText(context, "Database deletion failed", Toast.LENGTH_SHORT).show());
+
+                        FirebaseUser currentUser = auth.getCurrentUser();
+                        if (currentUser != null && currentUser.getUid().equals(user.getUid())) {
+                            currentUser.delete()
+                                    .addOnSuccessListener(aVoid -> Toast.makeText(context, "User deleted from authentication", Toast.LENGTH_SHORT).show())
+                                    .addOnFailureListener(e -> Toast.makeText(context, "Authentication deletion failed", Toast.LENGTH_SHORT).show());
+                        }
                     })
                     .setNegativeButton("Cancel", null)
                     .show();

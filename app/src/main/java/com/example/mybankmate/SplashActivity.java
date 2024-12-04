@@ -8,7 +8,7 @@ import com.airbnb.lottie.LottieAnimationView;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static final int SPLASH_DISPLAY_LENGTH = 3000; // 3 seconds
+    private static final int SPLASH_DISPLAY_LENGTH = 4500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +19,6 @@ public class SplashActivity extends AppCompatActivity {
         lottieAnimationView.setAnimation(R.raw.splash_animation);
         lottieAnimationView.playAnimation();
 
-        // Delay and navigate to the main activity after the splash screen
         new Handler().postDelayed(() -> {
             Intent mainIntent = new Intent(SplashActivity.this, LoginActivity.class);
             startActivity(mainIntent);
