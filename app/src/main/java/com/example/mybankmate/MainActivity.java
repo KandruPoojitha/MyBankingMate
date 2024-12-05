@@ -1,10 +1,9 @@
 package com.example.mybankmate;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -15,42 +14,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
 
-        // Load the default fragment (HomeFragment)
-        if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.main_container, new HomeFragment())
-                    .commit();
-        }
-
-        // Handle navigation item selection
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
-
-            int itemId = item.getItemId();
-            if (itemId == R.id.nav_home) {
-                selectedFragment = new HomeFragment();
-            } else if (itemId == R.id.nav_accounts) {
-                selectedFragment = new AccountsFragment();
-            } else if (itemId == R.id.nav_move_money) {
-                selectedFragment = new MoveMoneyFragment();
-            } else if (itemId == R.id.nav_more) {
-                selectedFragment = new MoreFragment();
+            if (id == R.id.nav_home) {
+                // Already on Home, no action needed
+                return true;
+            } else if (id == R.id.nav_accounts) {
+                startActivity(new Intent(MainActivity.this, AccountsActivity.class));
+                return true;
+            } else if (id == R.id.nav_move_money) {
+                startActivity(new Intent(MainActivity.this, MoveMoneyActivity.class));
+                return true;
+            } else if (id == R.id.nav_more) {
+                startActivity(new Intent(MainActivity.this, MoreActivity.class));
+                return true;
             }
 
-            // Replace the fragment if it is not null
-            if (selectedFragment != null) {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.main_container, selectedFragment)
-                        .commit();
-            }
-
-            return true;
+            return false;
         });
 
-        // Set default selected item
-        bottomNavigationView.setSelectedItemId(R.id.nav_home);
     }
 }
