@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.mybankmate">
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application
         android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -16,14 +13,14 @@
         android:theme="@style/Theme.MyBankMate"
         tools:targetApi="31">
         <activity
-            android:name=".BetweenMyAccounts"
+            android:name=".MoreActivity"
             android:exported="false" />
         <activity
-            android:name=".AddContactActivity"
+            android:name=".MoveMoneyActivity"
             android:exported="false" />
         <activity
-            android:name=".SendMoneyActivity"
-            android:exported="false" />
+            android:name=".AccountsActivity"
+            android:exported="false" /> <!-- Splash Activity -->
         <activity
             android:name=".SplashActivity"
             android:exported="true">
@@ -38,18 +35,21 @@
             android:exported="false" /> <!-- Reset Password Activity -->
         <activity
             android:name=".ResetPasswordActivity"
-            android:exported="false" /> <!-- Main Activity -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" /> <!-- Accounts Activity -->
+            android:exported="false" /> <!-- Admin Activity -->
         <activity
             android:name=".AdminActivity"
-            android:exported="false" />
-        <activity
-            android:name=".AdminManagementActivity"
             android:exported="false" /> <!-- User Management Activity -->
         <activity
             android:name=".UserManagementActivity"
+            android:exported="false" /> <!-- Admin Management Activity -->
+        <activity
+            android:name=".AdminManagementActivity"
+            android:exported="false" /> <!-- Main Activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" /> <!-- Home Activity -->
+        <activity
+            android:name=".HomeActivity"
             android:exported="false" />
     </application>
 

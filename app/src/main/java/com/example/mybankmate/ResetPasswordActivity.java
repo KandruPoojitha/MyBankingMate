@@ -3,6 +3,7 @@ package com.example.mybankmate;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -10,8 +11,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -24,8 +23,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
     private Button resetPasswordButton;
     private FirebaseAuth auth;
     private DatabaseReference usersRef;
-    private String userId;
-    private String email;
+    private String accountNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +32,11 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         usersRef = FirebaseDatabase.getInstance().getReference("users");
-        userId = getIntent().getStringExtra("userId");
-        email = getIntent().getStringExtra("email");
+        accountNumber = getIntent().getStringExtra("accountNumber");
 
-        if (userId == null || email == null) {
-            Toast.makeText(this, "Invalid user. Please log in again.", Toast.LENGTH_SHORT).show();
+        if (accountNumber == null) {
+            Log.e(TAG, "Account number is null!");
+            Toast.makeText(this, "Invalid account. Please log in again.", Toast.LENGTH_SHORT).show();
             navigateToLogin();
             return;
         }
@@ -65,7 +63,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
         }
         return true;
     }
-
     private void resetPassword(String newPassword) {
         if (auth.getCurrentUser() == null) {
             Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show();
@@ -73,38 +70,27 @@ public class ResetPasswordActivity extends AppCompatActivity {
             return;
         }
 
-        reauthenticateAndResetPassword(newPassword);
-    }
-
-    private void reauthenticateAndResetPassword(String newPassword) {
-        String password = ""; // Retrieve securely, e.g., from a secure source or by asking the user
-
-        AuthCredential credential = EmailAuthProvider.getCredential(email, password);
-        auth.getCurrentUser().reauthenticate(credential)
+        auth.getCurrentUser().updatePassword(newPassword)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        auth.getCurrentUser().updatePassword(newPassword)
-                                .addOnCompleteListener(passwordUpdateTask -> {
-                                    if (passwordUpdateTask.isSuccessful()) {
-                                        updateIsFirstLogin();
-                                    } else {
-                                        Toast.makeText(this, "Password update failed: " + passwordUpdateTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                        Log.d(TAG, "Password reset successfully for the current user.");
+                        updateIsFirstLogin(); // Update flag after resetting password
                     } else {
-                        Toast.makeText(this, "Reauthentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        navigateToLogin();
+                        Log.e(TAG, "Password reset failed: " + task.getException());
+                        Toast.makeText(this, "Failed to reset password: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void updateIsFirstLogin() {
-        usersRef.child(userId).child("isFirstLogin").setValue(false)
+        usersRef.child(accountNumber).child("isFirstLogin").setValue(false)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(this, "Password reset successful. Please log in again.", Toast.LENGTH_SHORT).show();
-                        navigateToLogin();
+                        Log.d(TAG, "isFirstLogin updated successfully for account: " + accountNumber);
+                        Toast.makeText(this, "Password reset successful", Toast.LENGTH_SHORT).show();
+                        navigateToLogin(); // Redirect to Home after a successful reset
                     } else {
+                        Log.e(TAG, "Failed to update isFirstLogin: " + task.getException());
                         Toast.makeText(this, "Failed to update user data", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -112,7 +98,9 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
     private void navigateToLogin() {
         Intent intent = new Intent(ResetPasswordActivity.this, LoginActivity.class);
+        intent.putExtra("userId", accountNumber);
         startActivity(intent);
         finish();
     }
+
 }
