@@ -1,0 +1,91 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/white">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/dark_blue"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="Back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Add Payee"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:gravity="center" />
+    </LinearLayout>
+
+    <!-- Payee Name Input -->
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@color/white">
+
+        <!-- Payee Name Input -->
+        <EditText
+            android:id="@+id/payee_name_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Payee Name"
+            android:textSize="16sp"
+            android:padding="8dp"
+            android:background="@drawable/border"
+            android:inputType="textPersonName" />
+
+        <!-- Payee Account ID Input -->
+        <EditText
+            android:id="@+id/payee_account_id_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Account ID"
+            android:textSize="16sp"
+            android:padding="8dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/border"
+            android:inputType="text" />
+
+        <!-- Save Payee Button -->
+        <Button
+            android:id="@+id/save_payee_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/dark_blue"
+            android:text="Save Payee"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <!-- Delete Payee Button -->
+        <Button
+            android:id="@+id/delete_payee_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/red"
+            android:text="Delete Payee"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:visibility="gone" />
+    </LinearLayout>
+</LinearLayout>
