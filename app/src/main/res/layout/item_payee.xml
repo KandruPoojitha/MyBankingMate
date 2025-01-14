@@ -1,0 +1,25 @@
+<LinearLayout
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@drawable/border"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/payee_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Payee Name"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/payee_account_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Account Number" />
+
+
+</LinearLayout>
