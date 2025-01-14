@@ -1,0 +1,97 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contact Us"
+            android:textSize="24dp"
+            android:textColor="@android:color/black"
+            android:padding="10dp"/>
+        <!-- Contact 1 -->
+        <LinearLayout
+            android:id="@+id/contact1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="?selectableItemBackground">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Call Us"
+                android:textSize="18sp"
+                android:textColor="@android:color/black" />
+
+            <ImageView
+                android:id="@+id/toggle_contact1"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_plus" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/contact1_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:paddingLeft="32dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="+1 800-123-4567"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- Contact 2 -->
+        <LinearLayout
+            android:id="@+id/contact2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="?selectableItemBackground">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Email Us"
+                android:textSize="18sp"
+                android:textColor="@android:color/black" />
+
+            <ImageView
+                android:id="@+id/toggle_contact2"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_plus" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/contact2_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:paddingLeft="32dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="support@mybankmate.com"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

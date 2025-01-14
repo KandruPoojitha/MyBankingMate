@@ -1,0 +1,215 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Frequently Asked Questons"
+                    android:textSize="24dp"
+                    android:textColor="@android:color/black"
+                    android:padding="10dp"/>
+
+                <!-- Question 1 -->
+                <LinearLayout
+                    android:id="@+id/question1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:background="?selectableItemBackground">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="1. How can I reset my password?"
+                        android:textSize="18sp"
+                        android:textColor="@android:color/black" />
+
+                    <ImageView
+                        android:id="@+id/toggle1"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_plus" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/answer1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:paddingLeft="32dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="To reset your password, go to the More tab and click on 'Reset Password'."
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <!-- Question 2 -->
+                <LinearLayout
+                    android:id="@+id/question2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:background="?selectableItemBackground">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="2. How do I check my account balance?"
+                        android:textSize="18sp"
+                        android:textColor="@android:color/black" />
+
+                    <ImageView
+                        android:id="@+id/toggle2"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_plus" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/answer2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:paddingLeft="32dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="You can check your balance on the home screen after logging in."
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <!-- Question 3 -->
+                <LinearLayout
+                    android:id="@+id/question3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:background="?selectableItemBackground">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="3. How do I add a new payee?"
+                        android:textSize="18sp"
+                        android:textColor="@android:color/black" />
+
+                    <ImageView
+                        android:id="@+id/toggle3"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_plus" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/answer3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:paddingLeft="32dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Go to the Pay Bills section and click on 'Manage Payees'."
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <!-- Question 4 -->
+                <LinearLayout
+                    android:id="@+id/question4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:background="?selectableItemBackground">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="4. What should I do if I see unauthorized transactions?"
+                        android:textSize="18sp"
+                        android:textColor="@android:color/black" />
+
+                    <ImageView
+                        android:id="@+id/toggle4"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_plus" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/answer4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:paddingLeft="32dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Please contact our support team immediately using the Contact Us page."
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <!-- Question 5 -->
+                <LinearLayout
+                    android:id="@+id/question5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:background="?selectableItemBackground">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="5. How do I update my profile information?"
+                        android:textSize="18sp"
+                        android:textColor="@android:color/black" />
+
+                    <ImageView
+                        android:id="@+id/toggle5"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_plus" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/answer5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:paddingLeft="32dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Navigate to the Profile section from the More tab and update your details."
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
