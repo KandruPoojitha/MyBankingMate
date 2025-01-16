@@ -22,16 +22,16 @@ public class FAQActivity extends AppCompatActivity {
     }
 
     private void setupExpandableFAQ(int questionId, int answerId, int toggleIconId) {
-        TextView question = findViewById(questionId);
-        LinearLayout answer = findViewById(answerId);
+        LinearLayout questionLayout = findViewById(questionId);
+        LinearLayout answerLayout = findViewById(answerId);
         ImageView toggleIcon = findViewById(toggleIconId);
 
-        question.setOnClickListener(v -> {
-            if (answer.getVisibility() == View.GONE) {
-                answer.setVisibility(View.VISIBLE);
+        questionLayout.setOnClickListener(v -> {
+            if (answerLayout.getVisibility() == View.GONE) {
+                answerLayout.setVisibility(View.VISIBLE);
                 toggleIcon.setImageResource(R.drawable.ic_minus);
             } else {
-                answer.setVisibility(View.GONE);
+                answerLayout.setVisibility(View.GONE);
                 toggleIcon.setImageResource(R.drawable.ic_plus);
             }
         });
